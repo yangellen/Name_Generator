@@ -31,13 +31,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return MaterialApp(
       title: 'Startup Name Generator',
       theme: ThemeData(
         primarySwatch: createMaterialColor(Color(0xFFC7EA46)),
       ),
       home: RandomWords(),
-        );
+    );
   }
 }
 
@@ -76,15 +76,15 @@ class _RandomWordsState extends State<RandomWords> {
         style: _biggerFont,
       ),
       trailing: Icon(
-        alreaySaved? Icons.favorite : Icons.favorite_border,
-        color: alreaySaved? Colors.red : null,
-        semanticLabel: alreaySaved? 'Remove from saved' : 'Save,',
+        alreaySaved ? Icons.favorite : Icons.favorite_border,
+        color: alreaySaved ? Colors.red : null,
+        semanticLabel: alreaySaved ? 'Remove from saved' : 'Save,',
       ),
-      onTap: (){
+      onTap: () {
         setState(() {
-          if(alreaySaved){
+          if (alreaySaved) {
             _saved.remove(pair);
-          } else{
+          } else {
             _saved.add(pair);
           }
         });
@@ -92,12 +92,52 @@ class _RandomWordsState extends State<RandomWords> {
     );
   }
 
-  @override 
-  Widget build(BuildContext context){
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Startup Name Generator')),
-        body: _buildSuggestions(),
+        title: const Text('Startup Name Generator'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.list),
+            onPressed: _pushSaved,
+            tooltip: 'Saved Suggestions',
+          )
+        ],
+      ),
+      body: _buildSuggestions(),
+    );
+  }
+
+  void _pushSaved() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          final tiles = _saved.map(
+            (pair) {
+              return ListTile(
+                title: Text(
+                  pair.asPascalCase,
+                  style: _biggerFont,
+                ),
+              );
+            },
+          );
+          final divided = tiles.isNotEmpty
+              ? ListTile.divideTiles(
+                  context: context,
+                  tiles: tiles,
+                ).toList()
+              : <Widget>[];
+
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Saved Suggestions'),
+            ),
+            body: ListView(children: divided),
+          );
+        },
+      ),
     );
   }
 }
